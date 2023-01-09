@@ -65,21 +65,28 @@ def login(driver: webdriver) -> webdriver:
     inputs[1].send_keys(os.environ.get('XPRIZE_PWD'))
     driver.find_element(By.CLASS_NAME, "ids-submit-btn").click()
     time.sleep(1)
+    assert "XPRIZE Prize Operations Platform" in driver.title
     return driver
 
 
 def navigate_teams(driver: webdriver) -> webdriver:
+    page = 0
     driver.get('https://pop.xprize.org/prizes/xprize_carbon_capture/overview')
     time.sleep(1)
     number_of_pages = int(driver.find_elements("//a[contains(text(),'Next')]/preceding-sibling::a[1]").text)
-    teams = driver.find_elements(By.TAG_NAME, "team-card")
+
+    while page <= number_of_pages:
+        teams = driver.find_elements(By.TAG_NAME, "team-card")
+        for team in teams:
+            print('accessing team')
+        page += 1
+
 
 def main():
     load_dotenv()
     driver = selenium_setup()
     driver = login(driver)
     navigate_teams(driver)
-
 
 
 if __name__ == '__main__':
