@@ -1,6 +1,7 @@
 # Webscraper for x-prize competition for carbon capture technology
 import requests
 import settings
+from workers import SeleniumWorkers
 import os
 from dotenv import load_dotenv
 import time
@@ -133,8 +134,6 @@ def navigate_teams(driver: webdriver):
     print('Done')
 
 
-# need to look for links in the about me
-# skills needed by team
 def scrape_data(soup: BeautifulSoup) -> dict: 
     team_data = {
             "team-name": soup.select_one('.team-name-header').text,
@@ -166,9 +165,6 @@ def scrape_data(soup: BeautifulSoup) -> dict:
             team_data["socials"].append({social.children[0].get('class'): link})
 
 
-def setup_workers():
-    drivers = [selenium_setup() for _ in range(settings.WORKERS)]
-
 def mongoConnect():
     """
     Function used to connect to our MongoDB and set up the database 
@@ -182,7 +178,9 @@ def mongoConnect():
 def main():
     load_dotenv()
     mongoConnect()
-    driver = selenium_setup()
+    # driver = selenium_setup()
+    workers = SeleniumWorkers(selenium_setup)
+    workers.drivers
     driver = login(driver)
     navigate_teams(driver)
 
